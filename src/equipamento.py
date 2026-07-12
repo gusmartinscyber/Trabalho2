@@ -183,9 +183,13 @@ class AplicacaoWeb(Equipamento):
 
     def validar_especifico(self) -> None:
         hostname = self._hostname.lower()
-        if not (hostname.startswith("app-") or "." in hostname):
+        if not (
+            hostname.startswith("app-")
+            or hostname.startswith("web-")
+            or "." in hostname
+        ):
             raise ErroValidacao(
-                "Aplicacao Web deve ter hostname iniciando com app- ou conter dominio."
+                "Aplicacao Web deve ter hostname iniciando com app-/web- ou conter dominio."
             )
 
 
@@ -212,11 +216,11 @@ class ImpressoraRede(Equipamento):
         return f"[IMPRESSORA] {self._hostname} — {self._setor}"
 
     def validar_especifico(self) -> None:
-        self._exigir_prefixo_hostname(
-            self._hostname,
-            "pr-",
-            "Impressora de Rede deve ter hostname iniciando com pr-.",
-        )
+        hostname = self._hostname.lower()
+        if not (hostname.startswith("pr-") or hostname.startswith("prn-")):
+            raise ErroValidacao(
+                "Impressora de Rede deve ter hostname iniciando com pr- ou prn-."
+            )
 
 
 class EstacaoTrabalho(Equipamento):
@@ -227,8 +231,8 @@ class EstacaoTrabalho(Equipamento):
         return f"[ESTACAO] {self._hostname} — {self._responsavel}"
 
     def validar_especifico(self) -> None:
-        self._exigir_prefixo_hostname(
-            self._hostname,
-            "est-",
-            "Estacao de Trabalho deve ter hostname iniciando com est-.",
-        )
+        hostname = self._hostname.lower()
+        if not (hostname.startswith("est-") or hostname.startswith("ws-")):
+            raise ErroValidacao(
+                "Estacao de Trabalho deve ter hostname iniciando com est- ou ws-."
+            )
