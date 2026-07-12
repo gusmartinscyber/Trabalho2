@@ -1,10 +1,12 @@
 """Ponto de entrada do inventario de ativos — Trabalho 2."""
 
+from src.aplicacao import Aplicacao
+
 
 def main() -> int:
-    print("Inventario de Seguranca - Trabalho 2")
-    print("Aplicacao em construcao.")
-    return 0
+    app = Aplicacao()
+    app.inicializar()
+    return app.executar()
 
 
 if __name__ == "__main__":
