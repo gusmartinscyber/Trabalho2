@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
+from src.cli import InventarioCLI
 from src.inventario import Inventario
 from src.models import TipoAtivo
 
@@ -16,7 +17,7 @@ class ResumoInicializacao:
 
 
 class Aplicacao:
-    """Bootstrap da aplicacao: carrega inventario JSON e exibe resumo inicial."""
+    """Bootstrap da aplicacao: carrega inventario JSON e executa a CLI."""
 
     def __init__(self) -> None:
         self._inventario = Inventario()
@@ -42,19 +43,11 @@ class Aplicacao:
         resumo = self._resumo
         assert resumo is not None
 
-        tipos = "\n".join(
-            f"[{codigo}] {descricao}"
-            for codigo, descricao in resumo.catalogo_tipos.items()
+        cli = InventarioCLI(self._inventario)
+        cli.exibir_startup(
+            resumo.caminho_json,
+            resumo.total_ativos,
+            resumo.total_vulnerabilidades,
+            resumo.catalogo_tipos,
         )
-
-        print("Inventario de Seguranca")
-        print("Ativos de TI e Vulnerabilidades")
-        print("")
-        print(f"Arquivo JSON: {resumo.caminho_json}")
-        print(f"Ativos cadastrados: {resumo.total_ativos}")
-        print(f"Vulnerabilidades cadastradas: {resumo.total_vulnerabilidades}")
-        print("")
-        print("Catalogo de tipos de ativo")
-        print(tipos)
-
-        return 0
+        return cli.executar()
