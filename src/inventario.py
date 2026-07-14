@@ -165,6 +165,15 @@ class Inventario:
                 maximo = max(maximo, vulnerabilidade.id)
         return maximo + 1
 
+    def listar_vulnerabilidades_do_ativo(
+        self, ativo_id_value: str | int
+    ) -> tuple[Equipamento, list[Vulnerabilidade]]:
+        ativo_id = self._normalizar_ativo_id(ativo_id_value)
+        equipamento = self._por_id.get(ativo_id)
+        if equipamento is None:
+            raise ErroValidacao("Nao existe ativo cadastrado com esse identificador.")
+        return equipamento, list(equipamento.vulnerabilidades)
+
     def adicionar_vulnerabilidade(
         self,
         ativo_id_value: str | int,

@@ -85,12 +85,8 @@ class InventarioCLI:
             "3": self._listar_ativos,
             "4": self._atualizar_ativo,
             "5": self._remover_ativo,
-            "6": lambda: self._render_info(
-                "Funcionalidade disponivel na Fase 5 (cadastro de vulnerabilidades)."
-            ),
-            "7": lambda: self._render_info(
-                "Funcionalidade disponivel na Fase 5 (visualizacao de vulnerabilidades)."
-            ),
+            "6": self._cadastrar_vulnerabilidade,
+            "7": self._visualizar_vulnerabilidades,
             "8": lambda: self._render_info(
                 "Funcionalidade disponivel na Fase 7 (exportacao de inventario)."
             ),
@@ -197,6 +193,19 @@ class InventarioCLI:
         removido = self._inventario.remover(equipamento.id)
         self._render_success(f"Ativo {removido.hostname} removido.")
 
+    def _cadastrar_vulnerabilidade(self) -> None:
+        equipamento = self._inventario.obter_por_id(
+            self._prompt_text("Identificador do ativo")
+        )
+        self._render_ativo(equipamento)
+        self._coletar_vulnerabilidade(equipamento.id)
+
+    def _visualizar_vulnerabilidades(self) -> None:
+        equipamento, vulnerabilidades = self._inventario.listar_vulnerabilidades_do_ativo(
+            self._prompt_text("Identificador do ativo")
+        )
+        self._render_lista_vulnerabilidades(equipamento, vulnerabilidades)
+
     def _coletar_vulnerabilidade(self, ativo_id: int) -> None:
         self._render_opcoes_vulnerabilidade()
         vulnerabilidade = self._inventario.adicionar_vulnerabilidade(
@@ -255,6 +264,30 @@ class InventarioCLI:
                 border_style="green",
             )
         )
+
+    def _render_lista_vulnerabilidades(
+        self, equipamento: Equipamento, vulnerabilidades: list[Vulnerabilidade]
+    ) -> None:
+        self._render_ativo(equipamento)
+        if not vulnerabilidades:
+            self._render_info("Ativo sem vulnerabilidades registradas.")
+            return
+
+        table = Table(title="Vulnerabilidades associadas", border_style="yellow")
+        table.add_column("ID", justify="right", style="yellow")
+        table.add_column("Descricao")
+        table.add_column("Categoria")
+        table.add_column("Severidade")
+        table.add_column("Status")
+        for vulnerabilidade in vulnerabilidades:
+            table.add_row(
+                str(vulnerabilidade.id),
+                vulnerabilidade.descricao,
+                vulnerabilidade.categoria,
+                vulnerabilidade.severidade.value,
+                vulnerabilidade.status.value,
+            )
+        self._console.print(table)
 
     def _render_vulnerabilidade(
         self, vulnerabilidade: Vulnerabilidade, ativo_id: int
