@@ -91,7 +91,7 @@ docker compose ps
 Para usar o menu interativo dentro do container:
 
 ```bash
-docker exec -it trabalho2-inventario python -m src.main
+docker exec -it gustavo-henrique python -m src.main
 ```
 
 Os dados são persistidos em `./data/inventario.json` no host (volume montado em `/app/data`).
