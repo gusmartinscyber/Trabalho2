@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 from src.equipamento import Equipamento
 from src.erros import ErroValidacao
 from src.factory import EquipamentoFactory
@@ -203,6 +205,57 @@ class Inventario:
         equipamento.adicionar_vulnerabilidade(vulnerabilidade)
         self.salvar()
         return vulnerabilidade
+
+    def exportar_relatorio_texto(self, caminho: Path | None = None) -> Path:
+        destino = caminho or self._resolver_caminho_relatorio()
+        linhas = self._montar_linhas_relatorio()
+        destino.parent.mkdir(parents=True, exist_ok=True)
+        destino.write_text("\n".join(linhas).rstrip() + "\n", encoding="utf-8")
+        return destino
+
+    def _resolver_caminho_relatorio(self) -> Path:
+        return self._repositorio.caminho.parent / "inventario.txt"
+
+    def _montar_linhas_relatorio(self) -> list[str]:
+        linhas = [
+            "Inventario de Seguranca",
+            "=======================",
+            "",
+        ]
+
+        if not self._equipamentos:
+            linhas.append("Nenhum ativo cadastrado ate o momento.")
+            return linhas
+
+        for equipamento in sorted(self._equipamentos, key=lambda item: item.id):
+            linhas.extend(self._formatar_bloco_ativo_relatorio(equipamento))
+
+        return linhas
+
+    @staticmethod
+    def _formatar_bloco_ativo_relatorio(equipamento: Equipamento) -> list[str]:
+        linhas = [
+            f"ATIVO {equipamento.id} - {equipamento.hostname}",
+            f"Responsavel: {equipamento.responsavel}",
+            f"Setor: {equipamento.setor}",
+            f"Tipo: {equipamento.tipo().label}",
+            f"Descricao: {equipamento.descricao or 'Nao informada'}",
+            "",
+            "Vulnerabilidades:",
+        ]
+
+        if equipamento.vulnerabilidades:
+            for vulnerabilidade in equipamento.vulnerabilidades:
+                linhas.append(
+                    "- "
+                    f"[{vulnerabilidade.severidade.value} | {vulnerabilidade.status.value}] "
+                    f"{vulnerabilidade.descricao} ({vulnerabilidade.categoria})"
+                )
+        else:
+            linhas.append("- Sem vulnerabilidades registradas")
+
+        linhas.append("")
+        return linhas
 
     @staticmethod
     def _normalizar_ativo_id(value: str | int) -> int:
