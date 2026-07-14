@@ -58,9 +58,8 @@ class Equipamento(ABC):
     def resumo(self) -> str:
         """Retorna representacao resumida polimorfica do ativo."""
 
-    @abstractmethod
     def validar_especifico(self) -> None:
-        """Valida regras especificas da subclasse."""
+        """Valida regras especificas da subclasse (extensivel)."""
 
     def validar(self) -> None:
         if self._id <= 0:
@@ -119,11 +118,6 @@ class Equipamento(ABC):
             raise ErroValidacao(f"{field_name} nao pode ficar vazio.")
         return text
 
-    @staticmethod
-    def _exigir_prefixo_hostname(hostname: str, prefixo: str, mensagem: str) -> None:
-        if not hostname.lower().startswith(prefixo):
-            raise ErroValidacao(mensagem)
-
 
 class Notebook(Equipamento):
     def tipo(self) -> TipoAtivo:
@@ -131,13 +125,6 @@ class Notebook(Equipamento):
 
     def resumo(self) -> str:
         return f"[NOTEBOOK] {self._hostname} — {self._setor}"
-
-    def validar_especifico(self) -> None:
-        self._exigir_prefixo_hostname(
-            self._hostname,
-            "nb-",
-            "Notebook deve ter hostname iniciando com nb-.",
-        )
 
 
 class Servidor(Equipamento):
@@ -147,13 +134,6 @@ class Servidor(Equipamento):
     def resumo(self) -> str:
         return f"[SERVIDOR] {self._hostname} — {self._setor}"
 
-    def validar_especifico(self) -> None:
-        self._exigir_prefixo_hostname(
-            self._hostname,
-            "srv-",
-            "Servidor deve ter hostname iniciando com srv-.",
-        )
-
 
 class Roteador(Equipamento):
     def tipo(self) -> TipoAtivo:
@@ -161,17 +141,6 @@ class Roteador(Equipamento):
 
     def resumo(self) -> str:
         return f"[ROTEADOR] {self._hostname} — {self._setor}"
-
-    def validar_especifico(self) -> None:
-        self._exigir_prefixo_hostname(
-            self._hostname,
-            "rt-",
-            "Roteador deve ter hostname iniciando com rt-.",
-        )
-        if len(self._setor) < 3:
-            raise ErroValidacao(
-                "Roteador deve informar setor com pelo menos 3 caracteres."
-            )
 
 
 class AplicacaoWeb(Equipamento):
@@ -181,17 +150,6 @@ class AplicacaoWeb(Equipamento):
     def resumo(self) -> str:
         return f"[APP WEB] {self._hostname} — {self._responsavel}"
 
-    def validar_especifico(self) -> None:
-        hostname = self._hostname.lower()
-        if not (
-            hostname.startswith("app-")
-            or hostname.startswith("web-")
-            or "." in hostname
-        ):
-            raise ErroValidacao(
-                "Aplicacao Web deve ter hostname iniciando com app-/web- ou conter dominio."
-            )
-
 
 class BancoDeDados(Equipamento):
     def tipo(self) -> TipoAtivo:
@@ -199,13 +157,6 @@ class BancoDeDados(Equipamento):
 
     def resumo(self) -> str:
         return f"[BANCO DE DADOS] {self._hostname} — {self._setor}"
-
-    def validar_especifico(self) -> None:
-        self._exigir_prefixo_hostname(
-            self._hostname,
-            "db-",
-            "Banco de Dados deve ter hostname iniciando com db-.",
-        )
 
 
 class ImpressoraRede(Equipamento):
@@ -215,13 +166,6 @@ class ImpressoraRede(Equipamento):
     def resumo(self) -> str:
         return f"[IMPRESSORA] {self._hostname} — {self._setor}"
 
-    def validar_especifico(self) -> None:
-        hostname = self._hostname.lower()
-        if not (hostname.startswith("pr-") or hostname.startswith("prn-")):
-            raise ErroValidacao(
-                "Impressora de Rede deve ter hostname iniciando com pr- ou prn-."
-            )
-
 
 class EstacaoTrabalho(Equipamento):
     def tipo(self) -> TipoAtivo:
@@ -229,10 +173,3 @@ class EstacaoTrabalho(Equipamento):
 
     def resumo(self) -> str:
         return f"[ESTACAO] {self._hostname} — {self._responsavel}"
-
-    def validar_especifico(self) -> None:
-        hostname = self._hostname.lower()
-        if not (hostname.startswith("est-") or hostname.startswith("ws-")):
-            raise ErroValidacao(
-                "Estacao de Trabalho deve ter hostname iniciando com est- ou ws-."
-            )

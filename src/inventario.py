@@ -28,6 +28,8 @@ class Inventario:
     def carregar(self) -> None:
         self._equipamentos = self._repositorio.carregar()
         self.reconstruir_indices()
+        for equipamento in self._equipamentos:
+            equipamento.validar()
 
     def salvar(self) -> None:
         self._repositorio.salvar(self._equipamentos)
@@ -189,8 +191,12 @@ class Inventario:
 
         vulnerabilidade = Vulnerabilidade(
             id=self._proximo_id_vulnerabilidade(),
-            descricao=descricao_value,
-            categoria=categoria_value,
+            descricao=self._normalizar_texto(
+                descricao_value, "Descricao da vulnerabilidade"
+            ),
+            categoria=self._normalizar_texto(
+                categoria_value, "Categoria da vulnerabilidade"
+            ),
             severidade=Vulnerabilidade._resolver_severidade(severidade_value),
             status=Vulnerabilidade._resolver_status(status_value),
         )
