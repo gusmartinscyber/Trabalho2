@@ -4,7 +4,7 @@ Segunda atividade avaliativa da disciplina de Cibersegurança (UFU).
 
 Este repositório é a evolução em orientação a objetos do Trabalho 1: mesma ideia de inventário de ativos e vulnerabilidades, com persistência em JSON e execução em container Docker.
 
-**Status:** em desenvolvimento (Fase 4 concluída — menu CLI com CRUD de ativos; vulnerabilidades pós-cadastro na Fase 5).
+**Status:** em desenvolvimento (Fase 5 concluída — menu CLI com CRUD de ativos e vulnerabilidades; exportação na Fase 7; Docker na Fase 6).
 
 ## Requisitos
 
@@ -45,7 +45,7 @@ Com o `venv` ativado, na raiz do repositório:
 python3 -m src.main
 ```
 
-A aplicação exibe o painel de inicialização (Rich) e o **menu interativo** para gerenciar ativos:
+A aplicação exibe o painel de inicialização (Rich) e o **menu interativo** para gerenciar ativos e vulnerabilidades:
 
 |  Opção  |                   Função                                |
 |---------|---------------------------------------------------------|
@@ -54,11 +54,13 @@ A aplicação exibe o painel de inicialização (Rich) e o **menu interativo** p
 |    3    | Listar ativos                                           |
 |    4    | Atualizar ativo                                         |
 |    5    | Remover ativo                                           |
+|    6    | Cadastrar vulnerabilidade                               |
+|    7    | Visualizar vulnerabilidades                             |
 |    0    | Sair                                                    |
 
-As opções 6–8 (vulnerabilidades e exportação) serão habilitadas nas Fases 5 e 7.
+A opção 8 (exportação de inventário) será habilitada na Fase 7.
 
-Os dados são persistidos em `data/inventario.json` (array JSON) após cada operação de cadastro, atualização ou remoção.
+Os dados são persistidos em `data/inventario.json` (array JSON) após cada operação de cadastro, atualização, remoção ou registro de vulnerabilidade.
 
 Variável de ambiente opcional para alterar o caminho do inventário:
 
