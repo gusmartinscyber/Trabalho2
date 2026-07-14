@@ -1,0 +1,17 @@
+services:
+  inventario:
+    build: .
+    container_name: trabalho2-inventario
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./data:/app/data
+    environment:
+      INVENTARIO_JSON_PATH: /app/data/inventario.json
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -f entrypoint.sh >/dev/null || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s

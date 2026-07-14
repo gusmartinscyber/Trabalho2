@@ -4,7 +4,7 @@ Segunda atividade avaliativa da disciplina de Cibersegurança (UFU).
 
 Este repositório é a evolução em orientação a objetos do Trabalho 1: mesma ideia de inventário de ativos e vulnerabilidades, com persistência em JSON e execução em container Docker.
 
-**Status:** em desenvolvimento (Fase 5 concluída — menu CLI com CRUD de ativos e vulnerabilidades; exportação na Fase 7; Docker na Fase 6).
+**Status:** em desenvolvimento (Fase 6 concluída — container Docker com uptime 24h; exportação na Fase 7).
 
 ## Requisitos
 
@@ -67,6 +67,45 @@ Variável de ambiente opcional para alterar o caminho do inventário:
 ```bash
 INVENTARIO_JSON_PATH=/caminho/inventario.json python3 -m src.main
 ```
+
+## Docker
+
+Pré-requisitos: Docker e Docker Compose instalados.
+
+Na raiz do repositório:
+
+```bash
+docker compose build
+docker compose up -d
+```
+
+Verificar se o container está em execução:
+
+```bash
+docker compose ps
+```
+
+Para usar o menu interativo dentro do container:
+
+```bash
+docker exec -it trabalho2-inventario python -m src.main
+```
+
+Os dados são persistidos em `./data/inventario.json` no host (volume montado em `/app/data`).
+
+Para reiniciar o container mantendo os dados:
+
+```bash
+docker compose restart
+```
+
+Para encerrar:
+
+```bash
+docker compose down
+```
+
+O container usa `restart: unless-stopped` e um loop no `entrypoint.sh` para permanecer em execução por pelo menos 24 horas no servidor do docente. O deploy no servidor deve ser feito com `docker compose up -d` em modo detached.
 
 ## Repositório
 
