@@ -87,9 +87,7 @@ class InventarioCLI:
             "5": self._remover_ativo,
             "6": self._cadastrar_vulnerabilidade,
             "7": self._visualizar_vulnerabilidades,
-            "8": lambda: self._render_info(
-                "Funcionalidade disponivel na Fase 7 (exportacao de inventario)."
-            ),
+            "8": self._exportar_inventario,
         }
 
         acao = acoes.get(opcao)
@@ -205,6 +203,21 @@ class InventarioCLI:
             self._prompt_text("Identificador do ativo")
         )
         self._render_lista_vulnerabilidades(equipamento, vulnerabilidades)
+
+    def _exportar_inventario(self) -> None:
+        with Progress(
+            SpinnerColumn(style="cyan"),
+            TextColumn("[cyan]Atualizando inventario textual..."),
+            BarColumn(bar_width=24, complete_style="green", finished_style="green"),
+            console=self._console,
+            transient=True,
+        ) as progress:
+            task_id = progress.add_task("exportacao", total=2)
+            progress.advance(task_id)
+            destino = self._inventario.exportar_relatorio_texto()
+            progress.advance(task_id)
+
+        self._render_success(f"Inventario exportado em {destino}.")
 
     def _coletar_vulnerabilidade(self, ativo_id: int) -> None:
         self._render_opcoes_vulnerabilidade()
